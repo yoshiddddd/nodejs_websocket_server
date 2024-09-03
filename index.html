@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>360-Degree Sensor Data Visualization with D3.js</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        svg {
+            border: 1px solid black;
+        }
+        .point {
+            fill: blue;
+            stroke: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>360-Degree Sensor Data Visualization</h1>
+    <svg id="radar" width="600" height="600"></svg>
+    <script>
+        const svg = d3.select("#radar"),
+              width = +svg.attr("width"),
+              height = +svg.attr("height"),
+              radius = Math.min(width, height) / 2,
+              g = svg.append("g").attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+        // WebSocketの接続を確立
+        const socket = new WebSocket("ws://192.168.0.7:8080");
+
+        socket.addEventListener("open", (event) => {
+            console.log("Connected to WebSocket server");
+        });
+
+        socket.addEventListener("message", (event) => {
+            const reader = new FileReader();
+
+            reader.onload = function() {
+                const text = reader.result;
+                const data = JSON.parse(text);  // JSONをオブジェクトにパース
+                console.log("Message from server: ", data);
+
+                // 極座標からデカルト座標への変換
+                const angle = data.arg * (Math.PI / 180);  // argをラジアンに変換
+                const x = radius * (data.distance / 100) * Math.cos(angle);
+                const y = radius * (data.distance / 100) * Math.sin(angle);
+
+                // プロット
+                g.append("circle")
+                    .attr("class", "point")
+                    .attr("cx", x)
+                    .attr("cy", y)
+                    .attr("r", 3);
+            };
+
+            reader.readAsText(event.data);
+        });
+    </script>
+</body>
+</html>

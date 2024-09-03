@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket and D3.js Example</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+    <h1>WebSocket Data Visualization with D3.js</h1>
+    <div id="output"></div>
+    <script>
+        // WebSocketの接続を確立
+        const socket = new WebSocket("ws://192.168.0.7:8080");
+
+        socket.addEventListener("open", (event) => {
+            console.log("Connected to WebSocket server");
+        });
+
+        socket.addEventListener("message", (event) => {
+            // 受信したデータを文字列に変換
+            const message = event.data.toString();
+            console.log("Message from server: ", message);
+
+            // D3.jsを使ってデータを表示
+            d3.select("#output")
+                .append("div")
+                .text(message);
+        });
+    </script>
+</body>
+</html>
