@@ -25,8 +25,8 @@
               radius = Math.min(width, height) / 2,
               g = svg.append("g").attr("transform", `translate(${width / 2}, ${height / 2})`);
 
-        // WebSocketの接続を確立
-        const socket = new WebSocket("ws://192.168.0.7:8080");
+        // ここのlocalhostは適宜自分のプライベートIPアドレスに変更
+        const socket = new WebSocket("ws://localhost:8080");
 
         socket.addEventListener("open", (event) => {
             console.log("Connected to WebSocket server");
